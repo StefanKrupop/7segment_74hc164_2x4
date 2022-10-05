@@ -1,4 +1,5 @@
 #include <arduino.h>
+#include <SPI.h>
 #include "led2x4.h"
 
 Led2x4::Led2x4(void){
@@ -6,12 +7,8 @@ Led2x4::Led2x4(void){
     memset(_out, 0xFF, 8);
 }
 
-void Led2x4::begin(int dataPin, int clockPin){
-    _data = dataPin;
-    _clk = clockPin;
-    
-    pinMode(_clk, OUTPUT);
-    pinMode(_data , OUTPUT);
+void Led2x4::begin(){
+    SPI.begin();
 }
 
 /**
@@ -20,8 +17,8 @@ void Led2x4::begin(int dataPin, int clockPin){
 void Led2x4::refresh(void){
     uint8_t index = (_index++) % 0x08;
     
-    shiftOut(_data, _clk, MSBFIRST, _out[index]); //Segments cathode
-    shiftOut(_data, _clk, MSBFIRST, 1<<index);        //Common anode
+    SPI.transfer(_out[index]); //Segments cathode
+    SPI.transfer(1<<index);        //Common anode
 
 }
 
